@@ -915,17 +915,17 @@ static const struct charclass {
 #define REPEAT_ZERO		3
 
 static int
-replace_repeat(const uschar *reptok, int reptoklen, const uschar *atom,
-	       int atomlen, int firstnum, int secondnum, int special_case)
+replace_repeat(const uschar *reptok, size_t reptoklen, const uschar *atom,
+	       size_t atomlen, int firstnum, int secondnum, int special_case)
 {
 	int i, j;
 	uschar *buf = 0;
 	int ret = 1;
 	int init_q = (firstnum == 0);		/* first added char will be ? */
 	int n_q_reps = secondnum-firstnum;	/* m>n, so reduce until {1,m-n} left  */
-	int prefix_length = reptok - basestr;	/* prefix includes first rep	*/
-	int suffix_length = strlen((const char *) reptok) - reptoklen;	/* string after rep specifier	*/
-	int size = prefix_length +  suffix_length;
+	size_t prefix_length = reptok - basestr;	/* prefix includes first rep	*/
+	size_t suffix_length = strlen((const char *) reptok) - reptoklen;	/* string after rep specifier	*/
+	size_t size = prefix_length +  suffix_length;
 
 	if (firstnum > 1) {	/* add room for reps 2 through firstnum */
 		size += atomlen*(firstnum-1);
@@ -980,8 +980,8 @@ replace_repeat(const uschar *reptok, int reptoklen, const uschar *atom,
 	return ret;
 }
 
-static int repeat(const uschar *reptok, int reptoklen, const uschar *atom,
-		  int atomlen, int firstnum, int secondnum)
+static int repeat(const uschar *reptok, size_t reptoklen, const uschar *atom,
+		  size_t atomlen, int firstnum, int secondnum)
 {
 	/*
 	   In general, the repetition specifier or "bound" is replaced here

@@ -101,7 +101,7 @@ extern	Array	*makesymtab(int);
 extern	void	freesymtab(Cell *);
 extern	void	freeelem(Cell *, const char *);
 extern	Cell	*setsymtab(const char *, const char *, double, unsigned int, Array *);
-extern	int	hash(const char *, int);
+extern	size_t	hash(const char *, size_t);
 extern	void	rehash(Array *);
 extern	Cell	*lookup(const char *, Array *);
 extern	double	setfval(Cell *, double);

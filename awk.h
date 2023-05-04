@@ -96,14 +96,14 @@ typedef struct Cell {
 	char	*nval;		/* name, for variables only */
 	char	*sval;		/* string value */
 	Awkfloat fval;		/* value as number */
-	int	 tval;		/* type info: STR|NUM|ARR|FCN|FLD|CON|DONTFREE|CONVC|CONVO */
+	unsigned tval;		/* type info: STR|NUM|ARR|FCN|FLD|CON|DONTFREE|CONVC|CONVO */
 	char	*fmt;		/* CONVFMT/OFMT value used to convert from number */
 	struct Cell *cnext;	/* ptr to next if chained */
 } Cell;
 
 typedef struct Array {		/* symbol table array */
-	int	nelem;		/* elements in table right now */
-	int	size;		/* size of tab */
+	size_t	nelem;		/* elements in table right now */
+	size_t	size;		/* size of tab */
 	Cell	**tab;		/* hash table pointers */
 } Array;
 

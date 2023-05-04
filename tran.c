@@ -172,7 +172,7 @@ void freesymtab(Cell *ap)	/* free a symbol table */
 {
 	Cell *cp, *temp;
 	Array *tp;
-	int i;
+	size_t i;
 
 	if (!isarr(ap))
 		return;
@@ -200,7 +200,7 @@ void freeelem(Cell *ap, const char *s)	/* free elem s from ap (i.e., ap["s"] */
 {
 	Array *tp;
 	Cell *p, *prev = NULL;
-	int h;
+	unsigned h;
 
 	tp = (Array *) ap->sval;
 	h = hash(s, tp->size);
@@ -221,7 +221,7 @@ void freeelem(Cell *ap, const char *s)	/* free elem s from ap (i.e., ap["s"] */
 
 Cell *setsymtab(const char *n, const char *s, Awkfloat f, unsigned t, Array *tp)
 {
-	int h;
+	size_t h;
 	Cell *p;
 
 	if (n != NULL && (p = lookup(n, tp)) != NULL) {
@@ -249,9 +249,9 @@ Cell *setsymtab(const char *n, const char *s, Awkfloat f, unsigned t, Array *tp)
 	return(p);
 }
 
-int hash(const char *s, int n)	/* form hash value for string s */
+size_t hash(const char *s, size_t n)	/* form hash value for string s */
 {
-	unsigned hashval;
+	size_t hashval;
 
 	for (hashval = 0; *s != '\0'; s++)
 		hashval = (*s + 31 * hashval);
@@ -260,7 +260,7 @@ int hash(const char *s, int n)	/* form hash value for string s */
 
 void rehash(Array *tp)	/* rehash items in small table into big one */
 {
-	int i, nh, nsz;
+	size_t i, nh, nsz;
 	Cell *cp, *op, **np;
 
 	nsz = GROWTAB * tp->size;
@@ -283,7 +283,7 @@ void rehash(Array *tp)	/* rehash items in small table into big one */
 Cell *lookup(const char *s, Array *tp)	/* look for s in tp */
 {
 	Cell *p;
-	int h;
+	size_t h;
 
 	h = hash(s, tp->size);
 	for (p = tp->tab[h]; p != NULL; p = p->cnext)
@@ -320,8 +320,8 @@ Awkfloat setfval(Cell *vp, Awkfloat f)	/* set float val of a Cell */
 	if (freeable(vp))
 		xfree(vp->sval); /* free any previous string */
 	vp->tval &= ~(STR|CONVC|CONVO); /* mark string invalid */
-	vp->fmt = NULL;
 	vp->tval |= NUM;	/* mark number ok */
+	vp->fmt = NULL;
 	if (f == -0)  /* who would have thought this possible? */
 		f = 0;
 	DPRINTF("setfval %p: %s = %g, t=%o\n", (void*)vp, NN(vp->nval), f, vp->tval);
