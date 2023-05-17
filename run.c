@@ -229,9 +229,8 @@ Cell *call(Node **a, int n)	/* function call.  very kludgy and fragile */
 {
 	static const Cell newcopycell = { OCELL, CCOPY, 0, EMPTY, 0.0, NUM|STR|DONTFREE, NULL, NULL };
 	int i, ncall, ndef;
-	int freed = 0; /* handles potential double freeing when fcn & param share a tempcell */
 	Node *x;
-	Cell *args[NARGS], *oargs[NARGS];	/* BUG: fixed size arrays */
+	Cell *args[n], *oargs[n];
 	Cell *y, *z, *fcn;
 	char *s;
 
@@ -293,6 +292,14 @@ Cell *call(Node **a, int n)	/* function call.  very kludgy and fragile */
 		if (isarr(t)) {
 			if (t->csub == CCOPY) {
 				if (i >= ncall) {
+					Array *tp = (Array *) t->sval;
+					if (tp == NULL) {
+						t->csub = CTEMP;
+						tempfree(t);
+						continue;
+					}
+					if (y >= tp->tab[0] && y <= tp->tab[tp->size - 1]) 	/* kludge to prevent freeing twice */
+						y = NULL;
 					freesymtab(t);
 					t->csub = CTEMP;
 					tempfree(t);
@@ -300,7 +307,6 @@ Cell *call(Node **a, int n)	/* function call.  very kludgy and fragile */
 					oargs[i]->tval = t->tval;
 					oargs[i]->tval &= ~(STR|NUM|DONTFREE);
 					oargs[i]->sval = t->sval;
-					tempfree(t);
 				}
 			}
 		} else if (t != y) {	/* kludge to prevent freeing twice */
@@ -309,14 +315,15 @@ Cell *call(Node **a, int n)	/* function call.  very kludgy and fragile */
 		} else if (t == y && t->csub == CCOPY) {
 			t->csub = CTEMP;
 			tempfree(t);
-			freed = 1;
+			y = NULL;
 		}
 	}
 	tempfree(fcn);
-	if (isexit(y) || isnext(y))
-		return y;
-	if (freed == 0) {
-		tempfree(y);	/* don't free twice! */
+
+	if (y) {
+		if (isexit(y) || isnext(y))
+			return y;
+		tempfree(y); /* don't free twice! */
 	}
 	z = frp->retval;			/* return value */
 	DPRINTF("%s returns %g |%s| %o\n", s, getfval(z), getsval(z), z->tval);
