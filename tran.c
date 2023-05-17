@@ -119,7 +119,7 @@ void arginit(int ac, char **av)	/* set up ARGV and ARGC */
 	for (i = 0; i < ac; i++) {
 		double result;
 
-		sprintf(temp, "%d", i);
+		snprintf(temp, 50, "%d", i);
 		if (is_number(*av, & result))
 			setsymtab(temp, *av, result, STR|NUM, ARGVtab);
 		else
@@ -219,7 +219,7 @@ void freeelem(Cell *ap, const char *s)	/* free elem s from ap (i.e., ap["s"] */
 		}
 }
 
-Cell *setsymtab(const char *n, const char *s, Awkfloat f, unsigned t, Array *tp)
+Cell *setsymtab(const char *n, const char *s, Awkfloat f, int t, Array *tp)
 {
 	int h;
 	Cell *p;
